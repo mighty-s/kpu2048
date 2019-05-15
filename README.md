@@ -4,4 +4,4 @@
 배시쉘로 구현한 2048 게임입니다.
 
 
-![progress](READEM_DOC/bash.JPG)<br>
+![progress](README_DOC/bash.JPG)<br>
