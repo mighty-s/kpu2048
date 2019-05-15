@@ -9,14 +9,12 @@
 #
 #######################################################################
 
-#important variables
-declare -ia board    # array that keeps track of game status
-declare -i pieces    # number of pieces present on board
-declare -i score=0   # score variable
-declare -i flag_skip # flag that prevents doing more than one operation on
-                     # single field in one step
-declare -i moves     # stores number of possible moves to determine if player lost 
-                     # the game
+# variables
+declare -ia board    
+declare -i pieces    # 필드위 블록 개수
+declare -i score=0   # 점수
+declare -i flag_skip 
+declare -i moves     # 움직일 수 있는 블록 방향 체크용 변수 
 declare ESC=$'\e'    
 
 declare header="
@@ -31,7 +29,7 @@ declare -i start_time=$(date +%s)
 # 기본 세팅
 declare -i board_size=4				      # 보드 사이즈
 declare -i target=2048			   	      # 목표 점수
-declare -i reload_flag=0
+declare -i reload_flag=0                  # 저장된 파일을 읽을 지 여부 ( 0 : false , 1 : true )
 declare config_dir="$HOME/2048/saveData"  # 파일 저장 경로
 
 # 숫자별 color 설정
@@ -163,30 +161,12 @@ function generate_piece {
   let pieces++
 }
 
-# perform push operation between two pieces
-# inputs:
-#         $1 - push position, for horizontal push this is row, for vertical column
-#         $2 - recipient piece, this will hold result if moving or joining
-#         $3 - originator piece, after moving or joining this will be left empty
-#         $4 - direction of push, can be either "up", "down", "left" or "right"
-#         $5 - if anything is passed, do not perform the push, only update number 
-#              of valid moves
-#         $board - original state of the game board
-# outputs:
-#         $change    - indicates if the board was changed this round
-#         $flag_skip - indicates that recipient piece cannot be modified further
-#         $board     - new state of the game board
-
 ###################################################################
 #  
 #                     두개의 같은 숫자를 합치는 함수
 #
-#  @param    $1 - 집어넣을 위치
-#            $2 - 
-#
-#
-#
-#
+# @author Dong-Min Seol
+# @since  2019.05.13
 ####################################################################
 function push_pieces {
   case $4 in
@@ -224,7 +204,7 @@ function push_pieces {
   let "${board[$first]}==${board[second]}" && { 
     if test -z $5; then
       let board[$first]*=2
-      let "board[$first]==$target" && end_game 1
+      let "board[$first]"=="$target" && end_game 1
       let board[$second]=0
       let pieces-=1
       let change=1
@@ -387,6 +367,7 @@ function end_game {
   
   stty echo # 입력값 안보이게 하기
   
+  # 입력값이 참인 경우,
   let $1 && {
     printf "축하합니다 목표점수인 $target 점에 도달하셨습니다."
     exit 0
@@ -458,9 +439,7 @@ while getopts "b:t:rh" opt; do
     r ) reload_flag="1";;
     h ) help $0
         exit 0;;
-    \?) printf "Invalid option: -"$opt", try $0 -h\n" >&2
-            exit 1;;
-    : ) printf "Option -"$opt" requires an argument, try $0 -h\n" >&2
+    \?) printf "부적절한 옵션 -"$opt", -h를 사용해보세요 \n" >&2
             exit 1;;
   esac
 done
@@ -475,7 +454,7 @@ first_round=$last_added
 generate_piece
 
 # [3] save 파일 존재 시  load
-if test $reload_flag = "1"; then
+if test $reload_flag ="1"; then
   reload_game
 fi
 
@@ -490,10 +469,4 @@ while true; do
    let moves==0 && end_game 0 # 패배
   }
 done
-
-
-
-
-
-
 
