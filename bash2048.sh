@@ -30,7 +30,7 @@ declare -i start_time=$(date +%s)
 declare -i board_size=4				      # 보드 사이즈
 declare -i target=2048			   	      # 목표 점수
 declare -i reload_flag=0                  # 저장된 파일을 읽을 지 여부 ( 0 : false , 1 : true )
-declare config_dir="$HOME/2048/saveData"  # 파일 저장 경로
+declare config_dir="$HOME/kpu2048/saveData"  # 파일 저장 경로
 
 # 숫자별 color 설정
 declare -a colors			  # color container array
