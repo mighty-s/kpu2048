@@ -454,7 +454,7 @@ first_round=$last_added
 generate_piece
 
 # [3] save 파일 존재 시  load
-if test $reload_flag ="1"; then
+if test $reload_flag = "1"; then
   reload_game
 fi
 
