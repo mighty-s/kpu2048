@@ -46,11 +46,11 @@ colors[512]="36m\033[7"       # 숫자 [512]  : cyan    (background)
 colors[1024]="35m\033[7"      # 숫자 [1024] : purple  (background) 
 colors[2048]="31m\033[7"      # 숫자 [2048] : red     (default 승리조건 점수)
 
-trap "end_game 0 1" INT #handle INT signal
+trap "end_game 0 1" INT       # CTRL-C 인터럽트 캐치용
 
 ################################################################################
 #
-#    스크립트 실행 시 입력받은 옵션 처리 함수
+#    현제 각 블록의 위치를 리턴하는 함수
 #
 #    @author Dong-Min Seol
 #    @since  2019.05.15
@@ -87,10 +87,11 @@ function _seq {
 #################################################################################
 function print_board {
   clear # [1] 버퍼 초기화
-	  
+  
+  # [2] 헤더 데이터 표시
   printf "$header \n\n  블록수 = $pieces\t목표점수 = $target\t현재점수 = $score"
   printf "\n\n"
-  printf '/------'
+  printf '/------' # 왼쪽 맨 끝 출력 
 
   for l in $(_seq 1 $index_max); do
     printf '+------'
@@ -99,7 +100,7 @@ function print_board {
   printf '\\\n'
   for l in $(_seq 0 $index_max); do
 
-    printf '|'
+    printf '|' # 왼쪽 | 라인 
     
     for m in $(_seq 0 $index_max); do
       if let ${board[l*$board_size+m]}; then
@@ -109,18 +110,18 @@ function print_board {
           printf "\033[1m\033[${colors[${board[l*$board_size+m]}]}m %4d\033[0m |" ${board[l*$board_size+m]}
         fi
       else
-        printf '      |'
+        printf '      |' # 오른쪽 | 라인
       fi
     done
 
     let l==$index_max || {
-      printf '\n|------'
+      printf '\n|------' # 좌측 맨 끝 
 
       for l in $(_seq 1 $index_max); do
-        printf '+------'
+        printf '+------' # 좌측 각 줄 맨위 
       done
 
-      printf '|\n'
+      printf '|\n' # 일반 줄 
     }
 
   done
@@ -129,7 +130,7 @@ function print_board {
   for l in $(_seq 1 $index_max); do
     printf '+------'
   done
-  printf '/\n'
+  printf '/\n' # 오른쪽 제일 하단 
 }
 
 ###############################################################################
@@ -216,11 +217,11 @@ function push_pieces {
 }
 
 #################################################################
-# 
+#  
+#  두개 블록을 합칠지 검증하는 함수
 #
-#
-#
-#
+#  @author Dong-Min Seol
+#  @since  2019.05.16
 #################################################################
 function apply_push {
   for i in $(_seq 0 $index_max); do
